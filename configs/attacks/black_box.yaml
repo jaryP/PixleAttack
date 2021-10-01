@@ -1,0 +1,45 @@
+attack1:
+  name: onepixel
+  pixels: 5
+onepixel2:
+  name: onepixel
+  pixels: 3
+onepixel1:
+  name: onepixel
+  pixels: 5
+attack2:
+  name: patches
+  eps: 0.1
+patches1:
+  name: patches
+  eps: 0.01
+  patches: 100
+attack3:
+  name: patches
+  eps: 0.1
+  patches: 100
+attack4:
+  name: patches
+  eps: 0.1
+  patches: 50
+fgsm1:
+  name: fgsm
+  eps: 0.01
+fgsm2:
+  name: fgsm
+  eps: 0.1
+fgsm3:
+  name: fgsm
+  eps: 1
+fgsm4:
+  name: fgsm
+  eps: 3
+square1:
+  name: square
+  eps: 0.1
+square2:
+  name: square
+  eps: 0.05
+square3:
+  name: square
+  eps: 0.01

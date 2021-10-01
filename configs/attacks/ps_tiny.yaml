@@ -1,0 +1,131 @@
+sparsefool1:
+  name: sparsefool
+tiny_small_random_patchswap:
+  name: patchesswap
+  restarts: 100
+  p1_x_dimensions: [0, 0.05]
+  p1_y_dimensions: [0, 0.05]
+  algorithm: random
+  save_images: true
+tiny_medium_random_patchswap:
+  name: patchesswap
+  restarts: 100
+  p1_x_dimensions: [0, 0.1]
+  p1_y_dimensions: [0, 0.1]
+  algorithm: random
+  save_images: true
+tiny_big_random_patchswap:
+  name: patchesswap
+  restarts: 100
+  p1_x_dimensions: [0, 0.2]
+  p1_y_dimensions: [0, 0.2]
+  algorithm: random
+  save_images: true
+#small_de_patchswap:
+#  name: patchesswap
+#  restarts: 10
+#  p1_x_dimensions: [0, 0.05]
+#  p1_y_dimensions: [0, 0.05]
+#  algorithm: de
+#  save_images: true
+#medium_de_patchswap:
+#  name: patchesswap
+#  restarts: 10
+#  p1_x_dimensions: [0, 0.1]
+#  p1_y_dimensions: [0, 0.1]
+#  algorithm: de
+#  save_images: true
+#big_de_patchswap:
+#  name: patchesswap
+#  restarts: 10
+#  p1_x_dimensions: [0, 0.2]
+#  p1_y_dimensions: [0, 0.2]
+#  algorithm: de
+#  save_images: true
+#a2e:
+#  name: patchesswap
+#  restarts: 10
+#  max_iterations: 20
+#  p1_x_dimensions: [0, 1]
+#  p1_y_dimensions: [0, 1]
+#  algorithm: random
+#  save_images: true
+#a3:
+#  name: patchesswap
+#  restarts: 10
+#  p1_x_dimensions: [0, 1]
+#  p1_y_dimensions: [0, 1]
+#  algorithm: de
+#  save_images: true
+#attack1:
+#  name: patchesswap
+#attack2:
+#  name: patchesswap
+#  population: 10
+#  restarts: 10
+#  p1_x_dimensions: [0, 3]
+#  p1_y_dimensions: [0, 3]
+#attack3:
+#  name: patchesswap
+#  population: 10
+#attack4:
+#  name: patchesswap
+#  population: 10
+#  same_size: false
+#attack5:
+#  name: patchesswap
+#  population: 1
+#  restarts: 10
+#  p1_x_dimensions: [0, 3]
+#  p1_y_dimensions: [0, 3]
+#attack6:
+#  name: patchesswap
+#  population: 5
+#  restarts: 10
+#  p1_x_dimensions: [0, 3]
+#  p1_y_dimensions: [0, 3]
+#  save_images: true
+#attack7:
+#  name: patchesswap
+#  population: 5
+#  restarts: 10
+#  p1_x_dimensions: [0, 0]
+#  p1_y_dimensions: [0, 0]
+#  save_images: true
+#attack8:
+#  load: false
+#  name: patchesswap
+#  restarts: 10
+#  p1_x_dimensions: [0, 3]
+#  p1_y_dimensions: [0, 3]
+#  algorithm: random
+onepixel2:
+  name: onepixel
+  pixels: 3
+onepixel1:
+  name: onepixel
+  pixels: 1
+onepixel3:
+  name: onepixel
+  pixels: 5
+fgsm1:
+  name: fgsm
+  eps: 0.01
+fgsm2:
+  name: fgsm
+  eps: 0.1
+fgsm3:
+  name: fgsm
+  eps: 1
+fgsm4:
+  name: fgsm
+  eps: 3
+#square1:
+#  name: square
+#  eps: 0.1
+#square2:
+#  name: square
+#  eps: 0.05
+#square3:
+#  name: square
+#  eps: 0.01

@@ -1,0 +1,3 @@
+ensemble_size: 2
+name: dropout
+dropout: 0.25

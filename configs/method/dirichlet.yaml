@@ -1,0 +1,4 @@
+similarity: euclidean
+distance_regularization: Yes
+distance_weight: 1
+name: dirichlet

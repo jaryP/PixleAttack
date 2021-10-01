@@ -1,0 +1,21 @@
+noswap_medium_random_patchswap:
+  name: patchesswap
+  restarts: 10
+  p1_x_dimensions: [0, 0.1]
+  p1_y_dimensions: [0, 0.1]
+  algorithm: random
+  save_images: true
+noswap_medium_random_patchswap2:
+  name: patchesswap
+  restarts: 50
+  p1_x_dimensions: [0, 0.1]
+  p1_y_dimensions: [0, 0.1]
+  algorithm: random
+  save_images: true
+noswap_small_random_patchswap:
+  name: patchesswap
+  restarts: 10
+  p1_x_dimensions: [0, 0.05]
+  p1_y_dimensions: [0, 0.05]
+  algorithm: random
+  save_images: true
