@@ -12,6 +12,8 @@ from torchvision.transforms import Resize, ToTensor, Normalize, Compose, \
     RandomHorizontalFlip, RandomCrop, transforms
 from tqdm import tqdm
 
+from base import Cub2011
+
 
 class HiddenPrints:
     def __enter__(self):
@@ -250,6 +252,30 @@ def get_dataset(name, model_name, augmentation=False):
         #         print(x.shape[0] == 1)
 
         input_size, classes = 3, 200
+
+    elif name == 'cub200':
+        tt = [
+            transforms.ToTensor(),
+            # transforms.RandomCrop(56),
+            # transforms.RandomResizedCrop(64),
+            # transforms.RandomHorizontalFlip(),
+            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+        ]
+
+        t = [
+            transforms.ToTensor(),
+            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
+        ]
+
+        transform = transforms.Compose(t)
+        train_transform = transforms.Compose(tt)
+
+        train_set = Cub2011(root='~/datasets/', train=True, transform=train_transform)
+        test_set = Cub2011(root='~/datasets/', train=False,
+                            transform=transform)
+
+        classes = 200
+        input_size = 3
 
     else:
         assert False

@@ -155,7 +155,7 @@ def standard_training(cfg: DictConfig, save_path: str,
                     model_name=None,
                     augmentation=augmented_dataset)
 
-    train_set = IndexedDataset(test_set)
+    train_set = IndexedDataset(train_set)
     test_set = IndexedDataset(test_set)
 
     trainloader = torch.utils.data.DataLoader(train_set,
@@ -167,9 +167,9 @@ def standard_training(cfg: DictConfig, save_path: str,
                                              shuffle=False)
 
     model = get_model(model_name,
-                                     image_size=input_size,
-                                     classes=classes + 1)
-    
+                      image_size=input_size,
+                      classes=classes + 1)
+
     model.to(device)
 
     if os.path.exists(os.path.join(save_path,
@@ -193,7 +193,9 @@ def standard_training(cfg: DictConfig, save_path: str,
 
         model.to(device)
 
-        for epoch in tqdm(range(epochs)):
+        bar = tqdm(range(epochs))
+
+        for epoch in bar:
             model.train()
 
             for _, (inputs, labels, i) in enumerate(trainloader, 0):
@@ -208,6 +210,19 @@ def standard_training(cfg: DictConfig, save_path: str,
                 loss.backward()
                 optimizer.step()
 
+            model.eval()
+
+            test_score, _, _ = accuracy_score(model=model,
+                                              dataset=testloader,
+                                              device=device)
+
+            train_score, _, _ = accuracy_score(model=model,
+                                               dataset=trainloader,
+                                               device=device)
+
+            bar.set_postfix({'train score': train_score,
+                             'test sore': test_score})
+
         torch.save(model.state_dict(),
                    os.path.join(save_path, 'model.pt'))
 
@@ -215,6 +230,12 @@ def standard_training(cfg: DictConfig, save_path: str,
 
     score, _, _ = accuracy_score(model=model,
                                  dataset=trainloader,
+                                 device=device)
+
+    log.info('Train score: {}'.format(score))
+
+    score, _, _ = accuracy_score(model=model,
+                                 dataset=testloader,
                                  device=device)
 
     log.info('Test score: {}'.format(score))
@@ -427,7 +448,7 @@ def standard_training(cfg: DictConfig, save_path: str,
             #
             # correctly_attacked = corrects / len(dataset)
 
-            correctly_attacked, mean_time, std_time =\
+            correctly_attacked, mean_time, std_time = \
                 calculate_scores(attack_results)
 
             log.info('\t\tCorrectly attacked: {}/{} ({})'

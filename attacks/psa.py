@@ -177,7 +177,7 @@ class PatchesSwap(Attack):
             else:
                 best_p = np.inf
                 best_image = image.clone()
-                stop = False
+                # stop = False
 
                 for _ in range(self.max_iterations):
                     iteratios += 1
@@ -213,20 +213,21 @@ class PatchesSwap(Attack):
 
                     pert_image = self._perturb(image, solution)
 
-                    if c(pert_image, None, True):
-                        best_image = pert_image
-                        stop = True
-                        break
+                    # if c(pert_image, None, True):
+                    #     best_image = pert_image
+                    #     stop = True
+                    #     break
 
                     p = f(pert_image, True)
                     if p < best_p:
                         best_p = p
                         best_image = pert_image
+                        break
 
                 image = best_image
 
-                if stop:
-                    break
+                # if stop:
+                #     break
 
         return image, iteratios
 

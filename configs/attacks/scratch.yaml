@@ -21,3 +21,20 @@ scratch_1bezier:
   crossover: 0.7
   scratch_type: bezier
   save_images: true
+scratch_2bezier:
+  name: scratch_that
+  pupulation: 50
+  max_iterations: 50
+  mutation_rate: 0.8
+  crossover: 0.7
+  scratch_type: bezier
+  save_images: true
+scratch_3bezier:
+  name: scratch_that
+  pupulation: 50
+  max_iterations: 50
+  mutation_rate: 0.8
+  crossover: 0.7
+  scratch_type: bezier
+  save_images: true
+
