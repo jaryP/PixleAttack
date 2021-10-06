@@ -95,7 +95,8 @@ def get_default_attack_config(cfg: DictConfig):
              'p1_y_dimensions': (0, 10),
              'p2_x_dimensions': None,
              'p2_y_dimensions': None,
-             'restart_callback': True}
+             'restart_callback': True,
+             'update_each_iteration': False}
 
     elif name == 'scratch_that':
         d = {'population': 1,
@@ -190,7 +191,9 @@ def get_attack(cfg: DictConfig):
                                p2_y_dimensions=cfg.get('p2_y_dimensions',
                                                        None),
                                restart_callback=cfg.get('restart_callback',
-                                                        True)
+                                                        True),
+                               update_each_iteration=cfg.get('update_each_iteration',
+                                                        False)
                                )
         elif name == 'scratch_that':
             return ScratchThat(model,

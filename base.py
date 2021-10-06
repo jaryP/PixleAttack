@@ -48,10 +48,10 @@ def get_model(name, image_size, classes):
         assert False
 
 
-
 class Cub2011(Dataset):
     base_folder = 'CUB_200_2011/images'
-    url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'
+    # url = 'http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz'
+    url = 'https://drive.google.com/u/1/uc?id=1GDr1OkoXdhaXWGA8S3MAq3a522Tak-nx&export=download'
     filename = 'CUB_200_2011.tgz'
     tgz_md5 = '97eceeb196236b17998738112f37df78'
 

@@ -213,10 +213,13 @@ def get_dataset(name, model_name, augmentation=False):
 
     elif name == 'tinyimagenet':
         tt = [
+            transforms.RandomRotation(20),
+            transforms.RandomHorizontalFlip(0.5),
             transforms.ToTensor(),
             # transforms.RandomCrop(56),
-            transforms.RandomResizedCrop(64),
-            transforms.RandomHorizontalFlip(),
+            # RandomCrop(64, padding=4),
+            # transforms.RandomRotation(20),
+            # transforms.RandomHorizontalFlip(),
             # transforms.Normalize((0.4802, 0.4481, 0.3975),
             #                      (0.2302, 0.2265, 0.2262))
         ]

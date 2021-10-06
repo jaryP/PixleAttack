@@ -287,9 +287,14 @@ def standard_training(cfg: DictConfig, save_path: str,
 
         if os.path.exists(attack_save_path) \
                 and v.get('load', True):
-            with open(attack_save_path, 'r') \
-                    as json_file:
-                attack_results = json.load(json_file)
+            try:
+                with open(attack_save_path, 'r') \
+                        as json_file:
+                    attack_results = json.load(json_file)
+            except Exception as e:
+                attack_results = {'name': k,
+                                  'values': v}
+
         else:
             attack_results = {'name': k,
                               'values': v}
@@ -345,26 +350,17 @@ def standard_training(cfg: DictConfig, save_path: str,
 
                     attack_label = attack_label.item()
 
-                    # pert_image, shift = attack(img, y)
-                    # import matplotlib.pyplot as plt
-                    # plt.imshow(np.moveaxis(img.cpu().numpy()[0], 0, -1))
-
                     start = time.time()
                     pert_image = attack(img, y)
-                    #
-                    # plt.imshow(np.moveaxis(pert_image.cpu().numpy()[0], 0, -1))
-                    # plt.show()
 
                     end = time.time()
                     elapsed_time = end - start
 
                     if isinstance(attack, PatchesSwap):
-                        pert_image, iterations = pert_image
+                        pert_image, iterations, statistics = pert_image
                     else:
                         iterations = -1
-
-                    # if isinstance(attack, RandomPatches):
-                    #     pert_image = pert_image[0]
+                        statistics = None
 
                     if v.get('save_images', False):
                         os.makedirs(attack_images_save_path, exist_ok=True)
@@ -381,26 +377,24 @@ def standard_training(cfg: DictConfig, save_path: str,
                                                 '{}'.format(i))))
                         plt.close(f)
 
-                    #
-                    # print(img.min(), img.max(),
-                    #       pert_image.max(), pert_image.min())
+                        # im1 = pert_image.cpu().numpy()[0][0]
+                        # im2 = img.cpu().numpy()[0][0]
+                        # _, s1, _ = np.linalg.svd(im1)
+                        # _, s2, _ = np.linalg.svd(im2)
 
-                    # final_prob = attack._get_prob(pert_image)[0].tolist()
-                    # final_prob = model.get_probs(pert_image)[0].tolist()
+                        # print(s1)
+                        # print(s2)
+                        # d = np.linalg.norm(s1 - s2)
+                        # print(d)
+                        # input()
+
                     final_prob = softmax(model(pert_image), dim=1)[0].tolist()
 
-                    # input(final_prob)
-
-                    # input(np.argmax(final_prob))
                     diff = (pert_image - img).view(-1)
 
                     norms = {norm_t: torch.linalg.norm(diff,
                                                        ord=norm_t).item() / 3
                              for norm_t in [0, 2, float('inf')]}
-
-                    # norms = {}
-                    # for norm_t in [0, 2, 'inf']:
-                    #     torch.linalg.norm(diff, ord=norm_t)
 
                     res = {
                         # 'attacked_label': attack_label,
@@ -408,12 +402,18 @@ def standard_training(cfg: DictConfig, save_path: str,
                         'probs': final_prob,
                         'prediction': np.argmax(final_prob),
                         'norms': norms,
-                        'iterations': iterations}
+                        'iterations': iterations,
+                        'statistics': statistics}
 
                     d['attacks'][str(attack_label)] = res
 
                     # print(d)
                     attack_results[i] = d
+
+                    # correctly_attacked, mean_time, std_time = \
+                    #     calculate_scores(attack_results)
+                    #
+                    # print(correctly_attacked)
 
             with open(attack_save_path, 'w') \
                     as json_file:

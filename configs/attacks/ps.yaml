@@ -1,12 +1,21 @@
-sparsefool1:
-  name: sparsefool
 small_random_patchswap:
   name: patchesswap
-  restarts: 10
+  restarts: 50
+  max_iterations: 100
   p1_x_dimensions: [0, 0.05]
   p1_y_dimensions: [0, 0.05]
   algorithm: random
   save_images: true
+  same_size: false
+  load: false
+#small_de_patchswap:
+#  name: patchesswap
+#  restarts: 5
+#  max_iterations: 10
+#  p1_x_dimensions: [0, 0.05]
+#  p1_y_dimensions: [0, 0.05]
+#  algorithm: de
+#  save_images: true
 medium_random_patchswap:
   name: patchesswap
   restarts: 10
@@ -14,6 +23,8 @@ medium_random_patchswap:
   p1_y_dimensions: [0, 0.1]
   algorithm: random
   save_images: true
+  load: false
+
 big_random_patchswap:
   name: patchesswap
   restarts: 10
@@ -21,6 +32,8 @@ big_random_patchswap:
   p1_y_dimensions: [0, 0.2]
   algorithm: random
   save_images: true
+  load: false
+
 #small_de_patchswap:
 #  name: patchesswap
 #  restarts: 10
@@ -105,6 +118,7 @@ onepixel2:
 onepixel1:
   name: onepixel
   pixels: 1
+  load: false
 onepixel3:
   name: onepixel
   pixels: 5
