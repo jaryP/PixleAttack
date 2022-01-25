@@ -1,0 +1,23 @@
+1px_random_1:
+  name: patchesswap
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 1
+  y_dimensions: 1
+  save_images: true
+  load: true
+  swap: false
+  pixel_mapping: random
+scratch_3bezier:
+  name: scratch_that
+  pupulation: 50
+  max_patches: 50
+  mutation_rate: 0.8
+  crossover: 0.7
+  scratch_type: bezier
+  save_images: true
+onepixel5:
+  name: onepixel
+  pixels: 5
+  steps: 50
+  popsize: 100

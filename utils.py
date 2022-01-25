@@ -1,3 +1,4 @@
+import csv
 import os
 import sys
 from typing import Sequence
@@ -6,13 +7,214 @@ import numpy as np
 import torch
 from torch import optim, nn
 from torch.optim import Optimizer
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Dataset
 from torchvision import datasets
+from torchvision.datasets.folder import default_loader, DatasetFolder, \
+    ImageFolder
 from torchvision.transforms import Resize, ToTensor, Normalize, Compose, \
     RandomHorizontalFlip, RandomCrop, transforms
 from tqdm import tqdm
-
+from pathlib import Path
 from base import Cub2011
+
+
+class TinyImagenet(Dataset):
+    """Tiny Imagenet Pytorch Dataset,
+    based on Avalanche implementation: https://github.com/ContinualAI/avalanche/
+    blob/4763ceacd1ab961167d1a1deddbf88a9a10220a0/avalanche/benchmarks/datasets/
+    tiny_imagenet/tiny_imagenet.py"""
+
+    filename = ('tiny-imagenet-200.zip',
+                'http://cs231n.stanford.edu/tiny-imagenet-200.zip')
+
+    md5 = '90528d7ca1a48142e341f4ef8d21d0de'
+
+    def __init__(
+            self,
+            root,
+            *,
+            train: bool = True,
+            transform=None,
+            target_transform=None,
+            loader=default_loader,
+            download=True):
+
+        self.transform = transform
+        self.target_transform = target_transform
+        self.train = train
+        self.loader = loader
+
+        # super(TinyImagenet, self).__init__(
+        #     root, self.filename[1], self.md5, download=download, verbose=True)
+        self.root = Path(root).expanduser()
+
+        # self._load_dataset()
+        # self.data_folder = os.path.join(self.root, 'tiny-imagenet-200')
+        self.data_folder = self.root / 'tiny-imagenet-200'
+
+        # self.label2id, self.id2label = TinyImagen et.\
+        #     labels2dict(self.data_folder)
+
+        label2id = {}
+        id2label = {}
+
+        with open(str(os.path.join(self.data_folder, 'wnids.txt')), 'r') as f:
+
+            reader = csv.reader(f)
+            curr_idx = 0
+            for ll in reader:
+                if ll[0] not in label2id:
+                    label2id[ll[0]] = curr_idx
+                    id2label[curr_idx] = ll[0]
+                    curr_idx += 1
+
+        self.label2id, self.id2label = label2id, id2label
+
+        self.data, self.targets = self.load_data()
+
+    # def _load_dataset(self) -> None:
+    #     """
+    #     The standardized dataset download and load procedure.
+    #     For more details on the coded procedure see the class documentation.
+    #     This method shouldn't be overridden.
+    #     This method will raise and error if the dataset couldn't be loaded
+    #     or downloaded.
+    #     :return: None
+    #     """
+    #     metadata_loaded = False
+    #     metadata_load_error = None
+    #
+    #     try:
+    #         metadata_loaded = self._load_metadata()
+    #     except Exception as e:
+    #         metadata_load_error = e
+    #
+    #     if metadata_loaded:
+    #         if self.verbose:
+    #             print('Files already downloaded and verified')
+    #         return
+    #
+    #     if not self.download:
+    #         msg = 'Error loading dataset metadata (dataset download was ' \
+    #               'not attempted as "download" is set to False)'
+    #         if metadata_load_error is None:
+    #             raise RuntimeError(msg)
+    #         else:
+    #             print(msg)
+    #             raise metadata_load_error
+
+    @staticmethod
+    def labels2dict(data_folder):
+        """
+        Returns dictionaries to convert class names into progressive ids
+        and viceversa.
+        :param data_folder: The root path of tiny imagenet
+        :returns: label2id, id2label: two Python dictionaries.
+        """
+
+        label2id = {}
+        id2label = {}
+
+        with open(str(os.path.join(data_folder, 'wnids.txt')), 'r') as f:
+
+            reader = csv.reader(f)
+            curr_idx = 0
+            for ll in reader:
+                if ll[0] not in label2id:
+                    label2id[ll[0]] = curr_idx
+                    id2label[curr_idx] = ll[0]
+                    curr_idx += 1
+
+        return label2id, id2label
+
+    def load_data(self):
+        """
+        Load all images paths and targets.
+        :return: train_set, test_set: (train_X_paths, train_y).
+        """
+
+        data = [[], []]
+
+        classes = list(range(200))
+        for class_id in classes:
+            class_name = self.id2label[class_id]
+
+            if self.train:
+                X = self.get_train_images_paths(class_name)
+                Y = [class_id] * len(X)
+            else:
+                # test set
+                X = self.get_test_images_paths(class_name)
+                Y = [class_id] * len(X)
+
+            data[0] += X
+            data[1] += Y
+
+        return data
+
+    def get_train_images_paths(self, class_name):
+        """
+        Gets the training set image paths.
+        :param class_name: names of the classes of the images to be
+            collected.
+        :returns img_paths: list of strings (paths)
+        """
+        # train_img_folder = os.path.join(self.data_folder,
+        #                                 'train', class_name, 'images')
+        train_img_folder = self.data_folder / 'train' / class_name / 'images'
+
+        img_paths = [f for f in train_img_folder.iterdir() if f.is_file()]
+
+        return img_paths
+
+    def get_test_images_paths(self, class_name):
+        """
+        Gets the test set image paths
+        :param class_name: names of the classes of the images to be
+            collected.
+        :returns img_paths: list of strings (paths)
+        """
+        # train_img_folder = os.path.join(self.data_folder,
+        #                                 'val', 'images')
+        val_img_folder = self.data_folder / 'val' / 'images'
+        # train_img_folder = os.path.join(self.data_folder,
+        #                                 'val', 'val_annotations.txt')
+        annotations_file = self.data_folder / 'val' / 'val_annotations.txt'
+
+        valid_names = []
+
+        # filter validation images by class using appropriate file
+        with open(str(annotations_file), 'r') as f:
+
+            reader = csv.reader(f, dialect='excel-tab')
+            for ll in reader:
+                if ll[1] == class_name:
+                    valid_names.append(ll[0])
+
+        img_paths = [val_img_folder / f for f in valid_names]
+
+        return img_paths
+
+    def __len__(self):
+        """ Returns the length of the set """
+        return len(self.data)
+
+    def __getitem__(self, index):
+        """ Returns the index-th x, y pattern of the set """
+
+        path, target = self.data[index], int(self.targets[index])
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        img = self.loader(path)
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return img, target
 
 
 class HiddenPrints:
@@ -25,7 +227,14 @@ class HiddenPrints:
         sys.stdout = self._original_stdout
 
 
-def get_dataset(name, model_name, augmentation=False):
+def get_dataset(name, model_name, augmentation=False, path=None):
+    if path is None:
+        if name == 'imagenet':
+            dataset_base_path = 'var/datasets/imagenet/'
+        dataset_base_path = '~/datasets/'
+    else:
+        dataset_base_path = path
+    
     if name == 'mnist':
         t = [Resize((32, 32)),
              ToTensor(),
@@ -37,14 +246,14 @@ def get_dataset(name, model_name, augmentation=False):
         t = Compose(t)
 
         train_set = datasets.MNIST(
-            root='~/datasets/mnist/',
+            root=dataset_base_path,
             train=True,
             transform=t,
             download=True
         )
 
         test_set = datasets.MNIST(
-            root='~/datasets/mnist/',
+            root=dataset_base_path,
             train=False,
             transform=t,
             download=True
@@ -52,30 +261,6 @@ def get_dataset(name, model_name, augmentation=False):
 
         classes = 10
         input_size = (1, 32, 32)
-
-    elif name == 'flat_mnist':
-        t = Compose([ToTensor(),
-                     Normalize(
-                         (0.1307,), (0.3081,)),
-                     torch.nn.Flatten(0)
-                     ])
-
-        train_set = datasets.MNIST(
-            root='~/datasets/mnist/',
-            train=True,
-            transform=t,
-            download=True
-        )
-
-        test_set = datasets.MNIST(
-            root='~/datasets/mnist/',
-            train=False,
-            transform=t,
-            download=True
-        )
-
-        classes = 10
-        input_size = 28 * 28
 
     elif name == 'svhn':
         if augmentation:
@@ -88,7 +273,7 @@ def get_dataset(name, model_name, augmentation=False):
 
         tt.extend([ToTensor(),
                    # Normalize(mn, std)
-                  ])
+                   ])
 
         t = [
             ToTensor(),
@@ -122,17 +307,17 @@ def get_dataset(name, model_name, augmentation=False):
 
         tt.extend([
             ToTensor(),
-                   # Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
-                   ])
-        
-        t = [   
+            # Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
+        ])
+
+        t = [
             ToTensor(),
             # Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
         ]
-        
+
         transform = Compose(t)
         train_transform = Compose(tt)
-        
+
         train_set = datasets.CIFAR10(
             root='~/datasets/cifar10', train=True, download=True,
             transform=train_transform)
@@ -216,18 +401,16 @@ def get_dataset(name, model_name, augmentation=False):
             transforms.RandomRotation(20),
             transforms.RandomHorizontalFlip(0.5),
             transforms.ToTensor(),
+            # transforms.Normalize([0.4802, 0.4481, 0.3975],
+            #                      [0.2302, 0.2265, 0.2262])
             # transforms.RandomCrop(56),
             # RandomCrop(64, padding=4),
-            # transforms.RandomRotation(20),
-            # transforms.RandomHorizontalFlip(),
-            # transforms.Normalize((0.4802, 0.4481, 0.3975),
-            #                      (0.2302, 0.2265, 0.2262))
         ]
 
         t = [
             transforms.ToTensor(),
-            # transforms.Normalize((0.4802, 0.4481, 0.3975),
-            #                      (0.2302, 0.2265, 0.2262))
+            # transforms.Normalize([0.4802, 0.4481, 0.3975],
+            #                      [0.2302, 0.2265, 0.2262])
         ]
 
         transform = transforms.Compose(t)
@@ -237,8 +420,8 @@ def get_dataset(name, model_name, augmentation=False):
         #     root='./datasets/tiny-imagenet-200', split='train',
         #     transform=transform)
 
-        train_set = datasets.ImageFolder('~/datasets/tiny-imagenet-200/train',
-                                         transform=train_transform)
+        train_set = TinyImagenet('~/datasets/',
+                                 transform=train_transform, train=True)
 
         # for x, y in train_set:
         #     if x.shape[0] == 1:
@@ -247,38 +430,21 @@ def get_dataset(name, model_name, augmentation=False):
         # test_set = TinyImageNet(
         #     root='./datasets/tiny-imagenet-200', split='val',
         #     transform=train_transform)
-        test_set = datasets.ImageFolder('~/datasets/tiny-imagenet-200/val',
-                                        transform=transform)
-
-        # for x, y in test_set:
-        #     if x.shape[0] == 1:
-        #         print(x.shape[0] == 1)
+        
+        test_set = TinyImagenet('~/datasets/',
+                                transform=transform, train=False)
 
         input_size, classes = 3, 200
 
-    elif name == 'cub200':
-        tt = [
-            transforms.ToTensor(),
-            # transforms.RandomCrop(56),
-            # transforms.RandomResizedCrop(64),
-            # transforms.RandomHorizontalFlip(),
-            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
-        ]
+    elif name == 'imagenet':
+        train_set = None
 
-        t = [
-            transforms.ToTensor(),
-            # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]
-        ]
+        test_set = ImageFolder(os.path.join(dataset_base_path, 'val'),
+                               transform=Compose([transforms.ToTensor(),
+                                                  Resize((256, 256))]))
 
-        transform = transforms.Compose(t)
-        train_transform = transforms.Compose(tt)
-
-        train_set = Cub2011(root='~/datasets/', train=True, transform=train_transform)
-        test_set = Cub2011(root='~/datasets/', train=False,
-                            transform=transform)
-
-        classes = 200
-        input_size = 3
+        input_size = (3, 256, 256)
+        classes = 1000
 
     else:
         assert False
@@ -291,7 +457,6 @@ def get_optimizer(parameters,
                   lr: float,
                   momentum: float = 0.0,
                   weight_decay: float = 0):
-
     name = name.lower()
     if name == 'adam':
         return optim.Adam(parameters, lr, weight_decay=weight_decay)
@@ -305,8 +470,7 @@ def get_optimizer(parameters,
 def ece_score(ground_truth: Sequence,
               predictions: Sequence,
               probs: Sequence,
-              bins: int =30):
-
+              bins: int = 30):
     ground_truth = np.asarray(ground_truth)
     predictions = np.asarray(predictions)
     probs = np.asarray(probs)
@@ -321,7 +485,7 @@ def ece_score(ground_truth: Sequence,
 
     for b in range(1, int(bins) + 1):
         i = np.logical_and(probs <= b / bins, probs > (
-                    b - 1) / bins)  # indexes for p in the current bin
+                b - 1) / bins)  # indexes for p in the current bin
 
         s = np.sum(i)
 
@@ -351,7 +515,6 @@ def model_training(backbone: nn.Module,
                    optimizer: Optimizer,
                    dataloader: DataLoader,
                    device: str = 'cpu'):
-
     backbone.to(device)
     classifier.to(device)
 

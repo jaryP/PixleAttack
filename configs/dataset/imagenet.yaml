@@ -1,0 +1,4 @@
+name: imagenet
+augment: Yes
+images_to_attack_per_label: 1
+path: '/var/datasets/imagenet/images'

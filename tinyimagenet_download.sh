@@ -11,5 +11,5 @@ if [ ! -d tiny-imagenet-200 ]; then
 fi
 
 cd $pwd
-python tiny_imagenet.py
+#python tiny_imagenet.py
 

@@ -1,0 +1,113 @@
+1px_random:
+  name: patchesswap
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 1
+  y_dimensions: 1
+  save_images: true
+  load: true
+  swap: false
+  pixel_mapping: random
+#1px_distance_random:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: false
+#  pixel_mapping: distance_random
+#1px_similarity_random:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: false
+#  pixel_mapping: similarity_random
+#1px_similarity:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: false
+#  pixel_mapping: similarity
+#1px_distance:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: false
+#  pixel_mapping: distance
+#1px_random_swap:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: true
+#  pixel_mapping: random
+#1px_distance_random_swap:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: true
+#  pixel_mapping: distance_random
+#1px_similarity_random_swap:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: true
+#  pixel_mapping: similarity_random
+#1px_similarity_swap:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: true
+#  pixel_mapping: similarity
+#1px_distance_swap:
+#  name: patchesswap
+#  restarts: 100
+#  max_iterations: 20
+#  x_dimensions: 1
+#  y_dimensions: 1
+#  save_images: true
+#  load: true
+#  swap: true
+#  pixel_mapping: distance
+scratch_3bezier:
+  name: scratch_that
+  pupulation: 50
+  max_patches: 50
+  mutation_rate: 0.8
+  crossover: 0.7
+  scratch_type: bezier
+  save_images: true
+onepixel5:
+  name: onepixel
+  pixels: 5
+  steps: 50
+  popsize: 100

@@ -1,2 +1,3 @@
 name: tinyimagenet
 augment: Yes
+images_to_attack_per_label: 5

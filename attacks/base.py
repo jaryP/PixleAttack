@@ -7,13 +7,14 @@ from autoattack import AutoAttack
 from omegaconf import DictConfig
 from torch.utils.data import Dataset
 from torchvision.datasets import VisionDataset
-from torchattacks import FGSM, OnePixel, Square, PGD, SparseFool
+from torchattacks import FGSM, Square, PGD, SparseFool
 from tqdm import tqdm
 from torch.utils.data import DataLoader, TensorDataset
 from torch import nn
 
-from attacks.psa import PatchesSwap
+from attacks.psa import PatchesSwap, BlackBoxPatchesSwap, WhiteBoxPatchesSwap
 from attacks.scratch import ScratchThat
+from attacks.cPixelAttack import cOnePixel
 
 
 class IndexedDataset(Dataset):
@@ -37,7 +38,6 @@ class HiddenPrints:
     def __exit__(self, exc_type, exc_val, exc_tb):
         sys.stdout.close()
         sys.stdout = self._original_stdout
-
 
 
 def get_default_attack_config(cfg: DictConfig):
@@ -74,7 +74,7 @@ def get_default_attack_config(cfg: DictConfig):
     elif name == 'sparsefool':
         d = {'steps': 20,
              'lam': 3,
-             'overshoot': 0.02,}
+             'overshoot': 0.02, }
     elif name == 'patches':
         d = {'eps': 0.1,
              'patches': 500,
@@ -86,16 +86,13 @@ def get_default_attack_config(cfg: DictConfig):
              'fixed_selection_quantile': 0.8,
              'seed': None}
     elif name == 'patchesswap':
-        d = {'population': 1,
-             'same_size': True,
-             'max_iterations': 100,
+        d = {'max_patches': 100,
              'restarts': 0,
-             'algorithm': 'de',
-             'p1_x_dimensions': (0, 10),
-             'p1_y_dimensions': (0, 10),
-             'p2_x_dimensions': None,
-             'p2_y_dimensions': None,
+             'x_dimensions': (0, 10),
+             'y_dimensions': (0, 10),
              'restart_callback': True,
+             'swap': False,
+             'pixel_mapping': 'random',
              'update_each_iteration': False}
 
     elif name == 'scratch_that':
@@ -106,6 +103,8 @@ def get_default_attack_config(cfg: DictConfig):
              'n_scratches': 1,
              'max_iterations': 100
              }
+    elif name == 'svd':
+        d = {}
     else:
         assert False
 
@@ -132,11 +131,11 @@ def get_attack(cfg: DictConfig):
                        steps=cfg.get('steps', 40),
                        random_start=cfg.get('random_start', True))
         elif name == 'onepixel':
-            return OnePixel(model,
-                            pixels=cfg.get('pixels', 1),
-                            steps=cfg.get('steps', 75),
-                            popsize=cfg.get('popsize', 400),
-                            inf_batch=cfg.get('inf_batch', 128))
+            return cOnePixel(model,
+                             pixels=cfg.get('pixels', 1),
+                             steps=cfg.get('steps', 75),
+                             popsize=cfg.get('popsize', 400),
+                             inf_batch=cfg.get('inf_batch', 128))
         elif name == 'autoattack':
             return AutoAttack(model,
                               norm=cfg.get('norm', 'Linf'),
@@ -158,9 +157,9 @@ def get_attack(cfg: DictConfig):
                           verbose=False)
         elif name == 'sparsefool':
             return SparseFool(model,
-                          steps=cfg.get('steps', 20),
-                          lam=cfg.get('lam', 3),
-                          overshoot=cfg.get('overshoot', 0.02))
+                              steps=cfg.get('steps', 20),
+                              lam=cfg.get('lam', 3),
+                              overshoot=cfg.get('overshoot', 0.02))
         # elif name == 'patches':
         #     return RandomPatches(model=model,
         #                          patches=cfg.get('patches', 500),
@@ -177,24 +176,24 @@ def get_attack(cfg: DictConfig):
         #                          cfg.get('fixed_selection_quantile', 0.8),
         #                          eps=cfg.get('eps', 0.01))
         elif name == 'patchesswap':
-            return PatchesSwap(model,
-                               population=cfg.get('population', 1),
-                               same_size=cfg.get('same_size', False),
-                               restarts=cfg.get('restarts', 0),
-                               algorithm=cfg.get('algorithm', 'de'),
-                               p1_x_dimensions=cfg.get('p1_x_dimensions',
-                                                       (0, 10)),
-                               p1_y_dimensions=cfg.get('p1_y_dimensions',
-                                                       (0, 10)),
-                               p2_x_dimensions=cfg.get('p2_x_dimensions',
-                                                       None),
-                               p2_y_dimensions=cfg.get('p2_y_dimensions',
-                                                       None),
-                               restart_callback=cfg.get('restart_callback',
-                                                        True),
-                               update_each_iteration=cfg.get('update_each_iteration',
-                                                        False)
-                               )
+            # return BlackBoxPatchesSwap(model,
+            return BlackBoxPatchesSwap(model,
+                                       max_patches=cfg['max_patches'],
+                                       pixel_mapping=cfg['pixel_mapping'],
+                                       restarts=cfg.get('restarts', 0),
+                                       algorithm=cfg.get('algorithm', 'de'),
+                                       swap=cfg.get('swap', False),
+                                       x_dimensions=cfg.get('x_dimensions',
+                                                            (1, 10)),
+                                       y_dimensions=cfg.get('y_dimensions',
+                                                            (1, 10)),
+                                       restart_callback=cfg.get(
+                                           'restart_callback',
+                                           True),
+                                       update_each_iteration=cfg.get(
+                                           'update_each_iteration',
+                                           False)
+                                       )
         elif name == 'scratch_that':
             return ScratchThat(model,
                                population=cfg.get('population', 1),
@@ -203,6 +202,9 @@ def get_attack(cfg: DictConfig):
                                scratch_type=cfg.get('scratch_type', 'line'),
                                n_scratches=cfg.get('n_scratches', 1),
                                max_iterations=cfg.get('max_iterations', 1000))
+        # elif name == 'svd':
+        #     return SVD(model, eps=cfg.get('eps', 0.01),
+        #                max_iterations=cfg.get('max_iterations', 1000))
         else:
             assert False
 

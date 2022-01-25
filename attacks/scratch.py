@@ -15,23 +15,13 @@ DimensionType = Union[DimensionTupleType, Sequence[DimensionTupleType]]
 class ScratchThat(Attack):
     def __init__(self, model,
                  population: int = 1,
-                 # max_iteration: int = None,
                  mutation_rate: float = (0.5, 1),
                  crossover_rate: float = 0.7,
                  scratch_type: str = 'line',
                  n_scratches: int = 1,
-                 # p1_x_dimensions: DimensionType = (2, 10),
-                 # p1_y_dimensions: DimensionType = (2, 10),
-                 # same_size: bool = True,
-                 # restarts: int = 0,
-                 # restart_callback: bool = True,
-                 # algorithm: str = 'de',
                  max_iterations: int = 1000,
-                 # p2_x_dimensions: DimensionType = None,
-                 # p2_y_dimensions: DimensionType = None,
-                 # penalize_epsilon=0.1,
-                 # swap=True
-                 ):
+                 alpha=1,
+                 beta=50):
 
         super().__init__("PatchesSwap", model)
 
@@ -43,6 +33,8 @@ class ScratchThat(Attack):
             raise ValueError('n_scratches must be >0'
                              '({})'.format(n_scratches))
 
+        self.alpha = alpha
+        self.beta = beta
         self.crossover_rate = crossover_rate
         self.mutation_rate = mutation_rate
         self.population = population
@@ -79,18 +71,24 @@ class ScratchThat(Attack):
             #  RGB
             bounds.extend([(0, 1), (0, 1), (0, 1)])
 
+        print(bounds)
+
+        iteration_stats = []
         adv_images = []
+
         for idx in range(bs):
             image, label = images[idx:idx + 1], labels[idx:idx + 1]
+            source_label = label
 
             if self.get_mode() != 'default':
                 label = self._get_target_label(image, label)
 
             f, c = self._get_fun(image, label,
-                                 target_attack=self._targeted)
+                                 target_attack=self._targeted,
+                                 source_label=source_label)
 
             solution = differential_evolution(func=f,
-                                              # callback=c,
+                                              callback=c,
                                               bounds=bounds,
                                               maxiter=self.max_iterations,
                                               popsize=self.population,
@@ -101,8 +99,16 @@ class ScratchThat(Attack):
                                               disp=False,
                                               polish=False)
 
+            # nit: num iterations
+            # nfev: function evaluations
+            # print(solution)
+
+            iteration_stats.append(solution.nfev)
+
             adv_image = self._perturb(image, solution.x)
             adv_images.append(adv_image)
+
+        self.required_iterations = iteration_stats
 
         adv_images = torch.cat(adv_images)
         return adv_images
@@ -239,7 +245,7 @@ class ScratchThat(Attack):
         prob = F.softmax(out, dim=1)
         return prob.detach().cpu().numpy()
 
-    def _get_fun(self, img, label, target_attack=False):
+    def _get_fun(self, img, label, target_attack=False, source_label=None):
         img = img.to(self.device)
 
         if isinstance(label, torch.Tensor):
@@ -253,19 +259,25 @@ class ScratchThat(Attack):
             #     pert_image = solution
 
             p = self._get_prob(pert_image)
+            probs = p
             p = p[np.arange(len(p)), label]
-            # p_log = np.log(p)
+
+            # print(_p.sum(-1))
 
             # if self.penalize_epsilon:
             #     p += torch.linalg.norm((pert_image - img).view(-1),
             #                            float('inf')).item()
 
             if target_attack:
+                # source_prob = p[np.arange(len(p)), source_label]
+                # target_prob = p[np.arange(len(p)), label]
+                # p = self.alpha * np.log(target_prob) -\
+                #     self.beta * np.log(source_prob)
+                # return p
                 p = 1 - p
-            #     return None
-            # else:
-            #     m = p * p_log
-            #     m = -m.sum(-1)
+
+            # p_log = np.log(probs)
+            # _p = - probs * p_log
 
             return p
 

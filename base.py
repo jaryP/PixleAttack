@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from omegaconf import DictConfig
-from torchvision.models import resnet18, resnet34, resnet50
+from torchvision.models import resnet18, resnet34, resnet50, alexnet, vgg11, \
+    vgg16
 import os
 import pandas as pd
 from torchvision.datasets.folder import default_loader
@@ -29,19 +30,33 @@ class Training(ABC):
         pass
 
 
-def get_model(name, image_size, classes):
+def get_model(name, image_size, classes, pre_trained=False,
+              is_imagenet=False):
     name = name.lower()
+
+    pre_trained = pre_trained or is_imagenet
+
     if name == 'alexnet':
-        return AlexNet(image_size[0], classes)
+        if is_imagenet:
+            return alexnet(pretrained=True)
+        else:
+            return AlexNet(image_size[0], classes)
+    if 'vgg' in name:
+        if name == 'vgg11':
+            return vgg11(num_classes=classes, pretrained=pre_trained)
+        elif name == 'vgg16':
+            return vgg16(num_classes=classes, pretrained=pre_trained)
+        else:
+            assert False
     elif 'resnet' in name:
         if name == 'resnet20':
             return resnet20(classes)
         elif name == 'resnet18':
-            return resnet18(num_classes=classes)
+            return resnet18(num_classes=classes, pretrained=pre_trained)
         elif name == 'resnet34':
-            return resnet34(num_classes=classes)
+            return resnet34(num_classes=classes, pretrained=pre_trained)
         elif name == 'resnet50':
-            return resnet50(num_classes=classes)
+            return resnet50(num_classes=classes, pretrained=pre_trained)
         else:
             assert False
     else:
@@ -93,7 +108,6 @@ class Cub2011(Dataset):
         for index, row in self.data.iterrows():
             filepath = os.path.join(self.root, self.base_folder, row.filepath)
             if not os.path.isfile(filepath):
-                print(filepath)
                 return False
         return True
 

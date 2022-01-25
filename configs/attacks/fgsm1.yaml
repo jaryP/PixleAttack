@@ -1,3 +1,0 @@
-attack4:
-  name: fgsm
-  eps: 0.001

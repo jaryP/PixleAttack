@@ -1,0 +1,39 @@
+ablation_sizes_2:
+  name: patchesswap
+  restarts: 100
+  max_patches: 100
+  x_dimensions: 0.1
+  y_dimensions: 0.1
+  save_images: false
+  load: true
+  pixel_mapping: random
+  update_each_iteration: false
+ablation_sizes_3:
+  name: patchesswap
+  restarts: 250
+  max_patches: 100
+  x_dimensions: 0.2
+  y_dimensions: 0.2
+  save_images: false
+  load: true
+  pixel_mapping: random
+  update_each_iteration: false
+ablation_sizes_4:
+  name: patchesswap
+  restarts: 500
+  max_patches: 100
+  x_dimensions: 0.01
+  y_dimensions: 0.01
+  save_images: false
+  load: true
+  pixel_mapping: random
+  update_each_iteration: false
+ablation_sizes_5:
+  name: patchesswap
+  max_patches: 50
+  x_dimensions: 0.05
+  y_dimensions: 0.05
+  save_images: false
+  load: true
+  pixel_mapping: random
+  update_each_iteration: true
