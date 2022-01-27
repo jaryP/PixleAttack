@@ -1,5 +1,5 @@
 1px_random:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1
@@ -9,7 +9,7 @@
   swap: false
   pixel_mapping: random
 #1px_distance_random:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -19,7 +19,7 @@
 #  swap: false
 #  pixel_mapping: distance_random
 #1px_similarity_random:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -29,7 +29,7 @@
 #  swap: false
 #  pixel_mapping: similarity_random
 #1px_similarity:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -39,7 +39,7 @@
 #  swap: false
 #  pixel_mapping: similarity
 #1px_distance:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -49,7 +49,7 @@
 #  swap: false
 #  pixel_mapping: distance
 #1px_random_swap:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -59,7 +59,7 @@
 #  swap: true
 #  pixel_mapping: random
 #1px_distance_random_swap:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -69,7 +69,7 @@
 #  swap: true
 #  pixel_mapping: distance_random
 #1px_similarity_random_swap:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -79,7 +79,7 @@
 #  swap: true
 #  pixel_mapping: similarity_random
 #1px_similarity_swap:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1
@@ -89,7 +89,7 @@
 #  swap: true
 #  pixel_mapping: similarity
 #1px_distance_swap:
-#  name: patchesswap
+#  name: pixle
 #  restarts: 100
 #  max_iterations: 20
 #  x_dimensions: 1

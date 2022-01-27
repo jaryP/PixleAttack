@@ -1,5 +1,5 @@
 abaltion_1px_random:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1
@@ -9,7 +9,7 @@ abaltion_1px_random:
   swap: false
   pixel_mapping: random
 abaltion_1px_distance_random:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1
@@ -19,7 +19,7 @@ abaltion_1px_distance_random:
   swap: false
   pixel_mapping: distance_random
 abaltion_1px_similarity_random:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1
@@ -29,7 +29,7 @@ abaltion_1px_similarity_random:
   swap: false
   pixel_mapping: similarity_random
 abaltion_1px_similarity:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1
@@ -39,7 +39,7 @@ abaltion_1px_similarity:
   swap: false
   pixel_mapping: similarity
 abaltion_1px_distance:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1

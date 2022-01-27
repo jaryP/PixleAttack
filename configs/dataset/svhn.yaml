@@ -1,3 +1,0 @@
-name: svhn
-augment: Yes
-images_to_attack_per_label: 100

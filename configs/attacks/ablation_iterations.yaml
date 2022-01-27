@@ -1,5 +1,5 @@
 ablation_iterations_restarts_1:
-  name: patchesswap
+  name: pixle
   restarts: 50
   max_patches: 100
   x_dimensions: 1
@@ -9,7 +9,7 @@ ablation_iterations_restarts_1:
   pixel_mapping: random
   update_each_iteration: false
 ablation_iterations_restarts_2:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_patches: 100
   x_dimensions: 1
@@ -19,7 +19,7 @@ ablation_iterations_restarts_2:
   pixel_mapping: random
   update_each_iteration: false
 ablation_iterations_restarts_3:
-  name: patchesswap
+  name: pixle
   restarts: 250
   max_patches: 100
   x_dimensions: 1
@@ -29,7 +29,7 @@ ablation_iterations_restarts_3:
   pixel_mapping: random
   update_each_iteration: false
 ablation_iterations_restarts_4:
-  name: patchesswap
+  name: pixle
   restarts: 500
   max_patches: 100
   x_dimensions: 1
@@ -39,7 +39,7 @@ ablation_iterations_restarts_4:
   pixel_mapping: random
   update_each_iteration: false
 ablation_iterations_iterative_1:
-  name: patchesswap
+  name: pixle
   max_patches: 50
   x_dimensions: 1
   y_dimensions: 1
@@ -48,7 +48,7 @@ ablation_iterations_iterative_1:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_2:
-  name: patchesswap
+  name: pixle
   max_patches: 100
   x_dimensions: 1
   y_dimensions: 1
@@ -57,7 +57,7 @@ ablation_iterations_iterative_2:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_3:
-  name: patchesswap
+  name: pixle
   max_patches: 250
   x_dimensions: 1
   y_dimensions: 1
@@ -66,7 +66,7 @@ ablation_iterations_iterative_3:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_4:
-  name: patchesswap
+  name: pixle
   max_patches: 500
   x_dimensions: 1
   y_dimensions: 1
@@ -75,7 +75,7 @@ ablation_iterations_iterative_4:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_5:
-  name: patchesswap
+  name: pixle
   max_patches: 1000
   x_dimensions: 1
   y_dimensions: 1
@@ -84,7 +84,7 @@ ablation_iterations_iterative_5:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_6:
-  name: patchesswap
+  name: pixle
   max_patches: 2000
   x_dimensions: 1
   y_dimensions: 1
@@ -93,7 +93,7 @@ ablation_iterations_iterative_6:
   pixel_mapping: random
   update_each_iteration: true
 ablation_iterations_iterative_7:
-  name: patchesswap
+  name: pixle
   max_patches: 10000
   x_dimensions: 1
   y_dimensions: 1

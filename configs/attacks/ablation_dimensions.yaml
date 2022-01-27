@@ -1,39 +1,111 @@
-ablation_sizes_2:
-  name: patchesswap
+#ablation_sizes_01:
+#  name: pixle
+#  restarts: 100
+#  max_patches: 100
+#  x_dimensions: 0.1
+#  y_dimensions: 0.1
+#  save_images: false
+#  load: false
+#  pixel_mapping: random
+#  update_each_iteration: false
+#ablation_sizes_001:
+#  name: pixle
+#  restarts: 500
+#  max_patches: 100
+#  x_dimensions: 0.01
+#  y_dimensions: 0.01
+#  save_images: false
+#  load: false
+#  pixel_mapping: random
+#  update_each_iteration: false
+#ablation_sizes_005:
+#  name: pixle
+#  max_patches: 50
+#  x_dimensions: 0.05
+#  y_dimensions: 0.05
+#  save_images: false
+#  load: false
+#  pixel_mapping: random
+#  update_each_iteration: false
+#ablation_sizes_0025:
+#  name: pixle
+#  max_patches: 50
+#  x_dimensions: 0.025
+#  y_dimensions: 0.025
+#  save_images: false
+#  load: false
+#  pixel_mapping: random
+#  update_each_iteration: false
+#ablation_sizes_0075:
+#  name: pixle
+#  max_patches: 50
+#  x_dimensions: 0.075
+#  y_dimensions: 0.075
+#  save_images: false
+#  load: false
+#  pixel_mapping: random
+#  update_each_iteration: false
+ablation_sizes_1px:
+  name: pixle
   restarts: 100
-  max_patches: 100
-  x_dimensions: 0.1
-  y_dimensions: 0.1
+  max_iterations: 20
+  x_dimensions: 2
+  y_dimensions: 2
   save_images: false
-  load: true
+  load: false
   pixel_mapping: random
   update_each_iteration: false
-ablation_sizes_3:
-  name: patchesswap
-  restarts: 250
-  max_patches: 100
-  x_dimensions: 0.2
-  y_dimensions: 0.2
+ablation_sizes_2px:
+  name: pixle
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 2
+  y_dimensions: 2
   save_images: false
-  load: true
+  load: false
   pixel_mapping: random
   update_each_iteration: false
-ablation_sizes_4:
-  name: patchesswap
-  restarts: 500
-  max_patches: 100
-  x_dimensions: 0.01
-  y_dimensions: 0.01
+ablation_sizes_3px:
+  name: pixle
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 3
+  y_dimensions: 3
   save_images: false
-  load: true
+  load: false
   pixel_mapping: random
   update_each_iteration: false
-ablation_sizes_5:
-  name: patchesswap
-  max_patches: 50
-  x_dimensions: 0.05
-  y_dimensions: 0.05
+ablation_sizes_4px:
+  name: pixle
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 4
+  y_dimensions: 4
   save_images: false
-  load: true
+  load: false
   pixel_mapping: random
-  update_each_iteration: true
+  update_each_iteration: false
+ablation_sizes_5px:
+  name: pixle
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 5
+  y_dimensions: 5
+  save_images: false
+  load: false
+  pixel_mapping: random
+  update_each_iteration: false
+ablation_sizes_10px:
+  name: pixle
+  restarts: 100
+  max_iterations: 20
+  x_dimensions: 10
+  y_dimensions: 10
+  save_images: false
+  load: false
+  pixel_mapping: random
+  update_each_iteration: false
+
+
+
+

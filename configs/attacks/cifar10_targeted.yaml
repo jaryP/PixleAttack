@@ -1,5 +1,5 @@
 1px_random_targeted:
-  name: patchesswap
+  name: pixle
   restarts: 100
   max_iterations: 20
   x_dimensions: 1

@@ -12,7 +12,7 @@ from tqdm import tqdm
 from torch.utils.data import DataLoader, TensorDataset
 from torch import nn
 
-from attacks.psa import PatchesSwap, BlackBoxPatchesSwap, WhiteBoxPatchesSwap
+from attacks.psa import PixleAttack
 from attacks.scratch import ScratchThat
 from attacks.cPixelAttack import cOnePixel
 
@@ -85,7 +85,7 @@ def get_default_attack_config(cfg: DictConfig):
              'select_subset': False,
              'fixed_selection_quantile': 0.8,
              'seed': None}
-    elif name == 'patchesswap':
+    elif name == 'pixle':
         d = {'max_patches': 100,
              'restarts': 0,
              'x_dimensions': (0, 10),
@@ -160,40 +160,24 @@ def get_attack(cfg: DictConfig):
                               steps=cfg.get('steps', 20),
                               lam=cfg.get('lam', 3),
                               overshoot=cfg.get('overshoot', 0.02))
-        # elif name == 'patches':
-        #     return RandomPatches(model=model,
-        #                          patches=cfg.get('patches', 500),
-        #                          min_dimensions=cfg.get('p1_x_dimensions',
-        #                                                 (2, 2)),
-        #                          max_dimensions=cfg.get('p1_y_dimensions',
-        #                                                 (12, 12)),
-        #                          patches_to_use=cfg.get('patches_to_use', 100),
-        #                          train_selection=
-        #                          cfg.get('train_selection', False),
-        #                          select_subset=
-        #                          cfg.get('select_subset', False),
-        #                          fixed_selection_percentile=
-        #                          cfg.get('fixed_selection_quantile', 0.8),
-        #                          eps=cfg.get('eps', 0.01))
-        elif name == 'patchesswap':
-            # return BlackBoxPatchesSwap(model,
-            return BlackBoxPatchesSwap(model,
-                                       max_patches=cfg['max_patches'],
-                                       pixel_mapping=cfg['pixel_mapping'],
-                                       restarts=cfg.get('restarts', 0),
-                                       algorithm=cfg.get('algorithm', 'de'),
-                                       swap=cfg.get('swap', False),
-                                       x_dimensions=cfg.get('x_dimensions',
+        elif name == 'pixle':
+            return PixleAttack(model,
+                               max_patches=cfg['max_patches'],
+                               pixel_mapping=cfg['pixel_mapping'],
+                               restarts=cfg.get('restarts', 0),
+                               algorithm=cfg.get('algorithm', 'de'),
+                               swap=cfg.get('swap', False),
+                               x_dimensions=cfg.get('x_dimensions',
                                                             (1, 10)),
-                                       y_dimensions=cfg.get('y_dimensions',
+                               y_dimensions=cfg.get('y_dimensions',
                                                             (1, 10)),
-                                       restart_callback=cfg.get(
+                               restart_callback=cfg.get(
                                            'restart_callback',
                                            True),
-                                       update_each_iteration=cfg.get(
+                               update_each_iteration=cfg.get(
                                            'update_each_iteration',
                                            False)
-                                       )
+                               )
         elif name == 'scratch_that':
             return ScratchThat(model,
                                population=cfg.get('population', 1),
@@ -202,9 +186,6 @@ def get_attack(cfg: DictConfig):
                                scratch_type=cfg.get('scratch_type', 'line'),
                                n_scratches=cfg.get('n_scratches', 1),
                                max_iterations=cfg.get('max_iterations', 1000))
-        # elif name == 'svd':
-        #     return SVD(model, eps=cfg.get('eps', 0.01),
-        #                max_iterations=cfg.get('max_iterations', 1000))
         else:
             assert False
 

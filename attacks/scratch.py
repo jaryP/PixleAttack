@@ -1,4 +1,3 @@
-from itertools import chain
 from typing import Tuple, Union, Sequence
 
 import numpy as np
@@ -6,7 +5,6 @@ import torch
 from scipy.optimize import differential_evolution
 from torchattacks.attack import Attack
 import torch.nn.functional as F
-from torchvision.transforms.functional import resize
 
 DimensionTupleType = Tuple[Union[int, float], Union[int, float]]
 DimensionType = Union[DimensionTupleType, Sequence[DimensionTupleType]]
@@ -23,7 +21,7 @@ class ScratchThat(Attack):
                  alpha=1,
                  beta=50):
 
-        super().__init__("PatchesSwap", model)
+        super().__init__("ScratchThat", model)
 
         if scratch_type not in ['line', 'bezier']:
             raise ValueError('scratch_type must be line or bezier '
@@ -46,15 +44,8 @@ class ScratchThat(Attack):
 
     def forward(self, images, labels):
 
-        # if self.get_mode() == 'default':
-        #     pass
-        # else:
-        #     pass
         images = images.clone().detach().to(self.device)
         labels = labels.clone().detach().to(self.device)
-
-        # if self._targeted:
-        #     label = self._get_target_label(images, label)
 
         bs, c, h, w = images.shape
 
@@ -99,10 +90,6 @@ class ScratchThat(Attack):
                                               disp=False,
                                               polish=False)
 
-            # nit: num iterations
-            # nfev: function evaluations
-            # print(solution)
-
             iteration_stats.append(solution.nfev)
 
             adv_image = self._perturb(image, solution.x)
@@ -112,133 +99,6 @@ class ScratchThat(Attack):
 
         adv_images = torch.cat(adv_images)
         return adv_images
-
-        # patch1_x_bounds = tuple(
-        #     [d if isinstance(d, int) else round(image.size(3) * d)
-        #      for d in self.p1_x_dimensions])
-        # patch1_y_bounds = tuple(
-        #     [d if isinstance(d, int) else round(image.size(2) * d)
-        #      for d in self.p1_y_dimensions])
-        #
-        # if self.p2_x_dimensions is not None:
-        #     patch2_x_bounds = tuple(
-        #         [d if isinstance(d, int) else round(image.size(3) * d)
-        #          for d in self.p2_x_dimensions])
-        #     patch2_y_bounds = tuple(
-        #         [d if isinstance(d, int) else round(image.size(2) * d)
-        #          for d in self.p2_y_dimensions])
-        #
-        # # patch2_bounds = tuple(
-        # #     [d if isinstance(d, int) else round(image.size(3) * d)
-        # #      for d in self.p2_x_dimensions]), \
-        # #                 tuple([d if isinstance(d, int) else round(
-        # #                     image.size(3) * d)
-        # #                        for d in self.p2_y_dimensions])
-        # iteratios = 0
-        #
-        # for r in range(self.restarts + 1):
-        #
-        #     if r > 0 and self.restart_callback and c(image, None, True):
-        #         break
-        #
-        #     if self.algorithm == 'de':
-        #         square = [(0, 1), (0, 1)]
-        #         # dx = tuple([d if isinstance(d, int) else round(image.size(3) * d)
-        #         #             for d in self.p1_x_dimensions])
-        #         # dy = tuple([d if isinstance(d, int) else round(image.size(3) * d)
-        #         #             for d in self.p1_y_dimensions])
-        #         #
-        #         # patch = [dx, dy]
-        #
-        #         bounds = square + [patch1_x_bounds] + [patch1_y_bounds] + square
-        #
-        #         if not self.same_size:
-        #             # dx = tuple(
-        #             #     [d if isinstance(d, int) else round(image.size(3) * d)
-        #             #      for d in self.p2_x_dimensions])
-        #             # dy = tuple(
-        #             #     [d if isinstance(d, int) else round(image.size(3) * d)
-        #             #      for d in self.p2_y_dimensions])
-        #
-        #             bounds += [patch2_x_bounds] + [patch2_y_bounds]
-        #
-        #         # bounds = square + square
-        #
-        #         pop = max(5, len(bounds) // self.population)
-        #         # pop = self.population
-        #         max_iter = self.max_iterations
-        #
-        #         delta = differential_evolution(func=f,
-        #                                        callback=c,
-        #                                        bounds=bounds,
-        #                                        maxiter=max_iter,
-        #                                        popsize=pop,
-        #                                        # init='random',
-        #                                        recombination=0.8,
-        #                                        atol=-1,
-        #                                        disp=False,
-        #                                        polish=False)
-        #
-        #         solution = delta.x
-        #         iteratios += delta.nfev
-        #
-        #         image = self._perturb(image, solution).to(self.device)
-        #
-        #     else:
-        #         best_p = np.inf
-        #         best_image = image.clone()
-        #         stop = False
-        #
-        #         for _ in range(self.max_iterations):
-        #             iteratios += 1
-        #
-        #             x1, y1, x2, y2 = np.random.uniform(0, 1, 4)
-        #             # dx = tuple(
-        #             #     [d if isinstance(d, int) else round(image.size(3) * d)
-        #             #      for d in self.p1_x_dimensions])
-        #             #
-        #             # dy = tuple(
-        #             #     [d if isinstance(d, int) else round(image.size(3) * d)
-        #             #      for d in self.p1_y_dimensions])
-        #
-        #             xl1, yl1 = np.random.randint(*patch1_x_bounds), \
-        #                        np.random.randint(*patch1_y_bounds)
-        #
-        #             if not self.same_size:
-        #                 # dx = tuple(
-        #                 #     [d if isinstance(d, int) else round(
-        #                 #         image.size(3) * d)
-        #                 #      for d in self.p2_x_dimensions])
-        #                 # dy = tuple(
-        #                 #     [d if isinstance(d, int) else round(
-        #                 #         image.size(3) * d)
-        #                 #      for d in self.p2_y_dimensions])
-        #
-        #                 xl2, yl2 = np.random.randint(*patch2_x_bounds), \
-        #                            np.random.randint(*patch2_y_bounds)
-        #
-        #                 solution = [x1, y1, xl1, yl1, x2, y2, xl2, yl2]
-        #             else:
-        #                 solution = [x1, y1, xl1, yl1, x2, y2]
-        #
-        #             pert_image = self._perturb(image, solution)
-        #
-        #             if c(pert_image, None, True):
-        #                 best_image = pert_image
-        #                 stop = True
-        #                 break
-        #
-        #             p = f(pert_image, True)
-        #             if p < best_p:
-        #                 best_p = p
-        #                 best_image = pert_image
-        #
-        #         image = best_image
-        #
-        #         if stop:
-        #             break
-        #
-        # return image
 
     def _get_prob(self, image):
         out = self.model(image.to(self.device))
@@ -253,55 +113,31 @@ class ScratchThat(Attack):
 
         @torch.no_grad()
         def func(solution, solution_as_perturbed=False):
-            # if not solution_as_perturbed:
             pert_image = self._perturb(img, solution)
-            # else:
-            #     pert_image = solution
 
             p = self._get_prob(pert_image)
-            probs = p
             p = p[np.arange(len(p)), label]
 
-            # print(_p.sum(-1))
-
-            # if self.penalize_epsilon:
-            #     p += torch.linalg.norm((pert_image - img).view(-1),
-            #                            float('inf')).item()
-
             if target_attack:
-                # source_prob = p[np.arange(len(p)), source_label]
-                # target_prob = p[np.arange(len(p)), label]
-                # p = self.alpha * np.log(target_prob) -\
-                #     self.beta * np.log(source_prob)
-                # return p
                 p = 1 - p
-
-            # p_log = np.log(probs)
-            # _p = - probs * p_log
 
             return p
 
         @torch.no_grad()
         def callback(solution, convergence, solution_as_perturbed=False):
-            # if not solution_as_perturbed:
             pert_image = self._perturb(img, solution)
-            # else:
-            #     pert_image = solution
 
             p = self._get_prob(pert_image)[0]
             mx = np.argmax(p)
 
             if target_attack:
                 return mx == label
-                # return p[label] > 0.8
             else:
                 return mx != label
-                # return p[label] < 0.1
 
         return func, callback
 
     def _perturb(self, img, solution):
-        # bs, c, h, w = img.shape
 
         zeros = torch.zeros_like(img)
 
