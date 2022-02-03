@@ -2,7 +2,7 @@
 
 This repository contains a PyTorch implementation of the paper: 
 
-### [Pixle: a fast and effective black-box attack based on rearranging pixels](https://arxiv.org/abs/2105.02551)
+### [Pixle: a fast and effective black-box attack based on rearranging pixels]()
 <!--[Pixle: a fast and effective black-box attack based on rearranging pixels](https://arxiv.org/abs/2105.02551)\ -->
 [Jary Pomponi](https://www.semanticscholar.org/author/Jary-Pomponi/1387980523), [Simone Scardapane](https://www.sscardapane.it/), [Aurelio Uncini](http://www.uncini.com/)
 
@@ -35,7 +35,7 @@ So see how to use it to lunch the experiments, please refer to the files:
 
 All the above files take as input the dataset, the architecture and the device to be used, with some limitations. 
 Please refer to each file to understand how to launch it.
-
+<!--
 ### Cite
 
 Please cite our work if you find it useful:
@@ -50,3 +50,4 @@ Please cite our work if you find it useful:
       primaryClass={cs.LG}
 }
 ```
+-->

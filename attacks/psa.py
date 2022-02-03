@@ -19,7 +19,6 @@ class PixleAttack(Attack):
                  swap: bool = False,
                  restart_callback: bool = True,
                  max_iterations: int = 100,
-                 penalize_epsilon=0.1,
                  update_each_iteration=False, **kwargs):
 
         super().__init__("Pixle", model)
@@ -31,8 +30,6 @@ class PixleAttack(Attack):
         # self.tol = tol
         self.update_each_iteration = update_each_iteration
         self.max_patches = max_iterations
-
-        self.penalize_epsilon = penalize_epsilon
 
         self.restarts = restarts
         self.restart_callback = restart_callback
