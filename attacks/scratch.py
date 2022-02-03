@@ -62,8 +62,6 @@ class ScratchThat(Attack):
             #  RGB
             bounds.extend([(0, 1), (0, 1), (0, 1)])
 
-        print(bounds)
-
         iteration_stats = []
         adv_images = []
 

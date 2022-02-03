@@ -18,7 +18,6 @@ from torchattacks import OnePixel
 from tqdm import tqdm
 
 from attacks.base import IndexedDataset, get_default_attack_config, get_attack
-from attacks.psa import PatchesSwap
 from base import get_model
 from evaluators import accuracy_score
 from utils import HiddenPrints, get_optimizer, get_dataset
@@ -40,7 +39,6 @@ def calculate_scores(results: dict):
 
         label = item['label']
         res = item['attacks'][str(label)]
-        # print(label, item['attacks'])
         pred = res['prediction']
         times.append(res['time'])
         iterations.append(res['iterations'])
@@ -65,37 +63,14 @@ class NpEncoder(json.JSONEncoder):
     def default(self, object):
         if isinstance(object, np.generic):
             return object.item()
-        # if isinstance(object, tuple):
-        #     return list(object)
         return super(NpEncoder, self).default(object)
-    # def default(self, obj):
-    #     if isinstance(obj, np.integer):
-    #         return int(obj)
-    #     if isinstance(obj, np.floating):
-    #         return float(obj)
-    #     if isinstance(obj, np.ndarray):
-    #         return obj.tolist()
-    #     if isinstance(obj, tuple):
-    #         return list(obj)
-    #     return super(NpEncoder, self).default(obj)
 
 
 @hydra.main(config_path="configs",
             config_name="config")
 def my_app(cfg: DictConfig) -> None:
-    # from methods.trainers import ensemble_trainer, wrapper_ensemble
     log = logging.getLogger(__name__)
     log.info(OmegaConf.to_yaml(cfg))
-    # print(OmegaConf.to_yaml(cfg))
-    # print("Working directory : {}".format(os.getcwd()))
-
-    # if method_name == 'naive':
-    #     methods(cfg)
-    # if method_name == 'batch_ensemble':
-    #     batch_ensemble(cfg)
-    # if method_name == 'dropout':
-    #     dropout(cfg)
-    # method_name = cfg['method']['name']
 
     experiment_cfg = cfg['experiment']
     load, save, path, experiments = experiment_cfg.get('load', True), \
@@ -126,34 +101,11 @@ def my_app(cfg: DictConfig) -> None:
         experiment_path = os.path.join(path, 'exp_{}'.format(image_index))
         os.makedirs(experiment_path, exist_ok=True)
 
-        # cfg = OmegaConf.to_container(cfg)
-
-        # log.info(OmegaConf.to_yaml(cfg))
-        # print(OmegaConf.to_yaml(cfg))
-        # print("Working directory : {}".format(os.getcwd()))
-
-        # if method_name == 'naive':
-        #     methods(cfg)
-        # if method_name == 'batch_ensemble':
-        #     batch_ensemble(cfg)
-        # if method_name == 'dropout':
-        #     dropout(cfg)
-        # method_name = cfg['method']['name']
-
         experiment_cfg = cfg['experiment']
         load, save, path, experiments = experiment_cfg.get('load', True), \
                                         experiment_cfg.get('save', True), \
                                         experiment_cfg.get('path', None), \
                                         experiment_cfg.get('experiments', 1)
-
-        # device = cfg['training'].get('device', 'cpu')
-
-        # if torch.cuda.is_available() and device != 'cpu':
-        #     torch.cuda.set_device(device)
-        #     device = 'cuda:{}'.format(device)
-        # else:
-        #     warnings.warn("Device not found or CUDA not available."
-        # device = torch.device(device)
 
         if path is None:
             path = os.getcwd()
@@ -287,19 +239,6 @@ def my_app(cfg: DictConfig) -> None:
 
         model.eval()
 
-        # if not is_imagenet:
-        #     score, _, _ = accuracy_score(model=model,
-        #                                  dataset=trainloader,
-        #                                  device=device)
-        #
-        #     log.info('Train score: {}'.format(score))
-        #
-        #     score, _, _ = accuracy_score(model=model,
-        #                                  dataset=testloader,
-        #                                  device=device)
-        #
-        #     log.info('Test score: {}'.format(score))
-
         images = []
         labels = []
         indexes = []
@@ -355,8 +294,6 @@ def my_app(cfg: DictConfig) -> None:
             os.makedirs(attack_images_save_path, exist_ok=True)
             os.makedirs(base_images_save_path, exist_ok=True)
 
-            # print(attack_save_path, v, os.path.exists(attack_save_path))
-
             if os.path.exists(attack_save_path) \
                     and v.get('load', True):
                 try:
@@ -391,7 +328,7 @@ def my_app(cfg: DictConfig) -> None:
                         continue
                     else:
                         d = {'label': y.item(),
-                             'probs': probs,
+                             # 'probs': probs,
                              'attacks': {}}
 
                     for offset in tqdm(range(classes), leave=False):
@@ -412,17 +349,6 @@ def my_app(cfg: DictConfig) -> None:
                         attack_label = attack_label.item()
 
                         if str(attack_label) not in d['attacks']:
-                            # initial_probs = attack._get_prob(img).tolist()
-                            #
-                            # a = {'label': y.item(),
-                            #      'porbs': initial_probs}
-                            #
-                            # if attack.get_mode == 'targeted':
-                            #     attack_label = attack._get_target_label(img, y)
-                            # else:
-                            #     attack_label = y
-
-                            # attack_label = attack_label
 
                             start = time.time()
                             pert_images = attack(img, y)
@@ -432,10 +358,6 @@ def my_app(cfg: DictConfig) -> None:
 
                             iterations = -1
                             statistics = None
-
-                            # for bi in range(pert_images.shape[0]):
-                            #     b_image = img[bi]
-                            #     b_pert_image = pert_images[bi]
 
                             if getattr(attack, 'probs_statistics', None) \
                                     is not None:
@@ -477,13 +399,12 @@ def my_app(cfg: DictConfig) -> None:
                             res = {
                                 # 'attacked_label': attack_label,
                                 'time': elapsed_time,
-                                'probs': final_prob,
+                                # 'probs': final_prob,
                                 'prediction': np.argmax(final_prob),
                                 'norms': norms,
                                 'iterations': iterations,
                                 'statistics': statistics}
 
-                            # print(np.argmax(final_prob) == attack_label)
                             d['attacks'][str(attack_label)] = res
 
                     attack_results[image_index] = d
@@ -496,25 +417,6 @@ def my_app(cfg: DictConfig) -> None:
             with open(os.path.join(experiment_path, attack_save_path), 'r') \
                     as json_file:
                 attack_results = json.load(json_file)
-
-                # for key in attack_results.keys():
-                #     if key in ['values', 'name']:
-                #         continue
-                #
-                #     item = attack_results[key]
-                #
-                #     label = item['label']
-                #     res = item['attacks'][str(label)]
-                #     # print(label, item['attacks'])
-                #     pred = res['prediction']
-                #     times.append(res['time'])
-                #
-                #     if label != pred:
-                #         corrects += 1
-                #
-                # mean_time, std_time = np.mean(times), np.std(times)
-                #
-                # correctly_attacked = corrects / len(dataset)
 
                 correctly_attacked, mean_time, std_time, \
                 mean_iterations, std_iterations, mean_zeron, std_zeron = \
@@ -534,67 +436,6 @@ def my_app(cfg: DictConfig) -> None:
                          .format(mean_time, std_time))
 
         return model
-
-        # if method_name == 'naive':
-        #     ff = ensemble_trainer(cfg, experiment_path, device=device)
-        # elif method_name == 'dropout':
-        #     ff = wrapper_ensemble(cfg, experiment_path,
-        #                           ensemble_type='dropout',
-        #                           device=device)
-        # elif method_name == 'batch_ensemble':
-        #     ff = wrapper_ensemble(cfg, experiment_path,
-        #                           ensemble_type='batch_ensemble',
-        #                           device=device)
-        # elif method_name == 'dirichlet':
-        #     ff = branch_dirichlet_trainer(cfg, device=device,
-        #                                   save_path=experiment_path,
-        #                                   logits_training=False)
-        # elif method_name == 'dirichlet_logits':
-        #     ff = branch_dirichlet_trainer(cfg, logits_training=True,
-        #                                   device=device,
-        #                                   save_path=experiment_path)
-        # elif method_name == 'dirichlet_transformations':
-        #     ff = shift_trainer(cfg, logits_training=True, device=device,
-        #                        save_path=experiment_path)
-        # else:
-        #     assert False
-        #
-        # dataset_cfg = cfg['dataset']
-        # dataset_name = dataset_cfg['name']
-        # augmented_dataset = dataset_cfg.get('augment', False)
-        # training_cfg = cfg['training']
-        # batch_size, device = training_cfg['batch_size'], \
-        #                      training_cfg.get('device', 'cpu')
-        #
-        # train_set, test_set, input_size, classes = \
-        #     get_dataset(name=dataset_name,
-        #                 model_name=None,
-        #                 augmentation=augmented_dataset)
-        #
-        # testloader = torch.utils.data.DataLoader(test_set,
-        #                                          batch_size=batch_size,
-        #                                          shuffle=False)
-        #
-        # atks = cfg.get('attacks', {})
-        #
-        # for k, v in atks.items():
-        #     log.info('Attack {}: {}'.format(k, v))
-        #
-        #     attack = get_attack(v)
-        #     dataset = get_attacked_dataset(attack, testloader, ff, device)
-        #
-        #     dataset = DataLoader(dataset, batch_size=batch_size)
-        #
-        #     score, _, _ = accuracy_score(model=ff,
-        #                                  dataset=dataset,
-        #                                  device=device)
-        #     log.info('Score: {}'.format(score))
-        #
-        #     ece, _, _, _ = ece_score(model=ff,
-        #                              dataset=dataset,
-        #                              device=device)
-        #
-        #     log.info('ECE: {}'.format(ece))
 
 
 if __name__ == "__main__":

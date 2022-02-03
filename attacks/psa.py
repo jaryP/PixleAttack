@@ -18,7 +18,7 @@ class PixleAttack(Attack):
                  restarts: int = 0,
                  swap: bool = False,
                  restart_callback: bool = True,
-                 max_patches: int = 100,
+                 max_iterations: int = 100,
                  penalize_epsilon=0.1,
                  update_each_iteration=False, **kwargs):
 
@@ -30,7 +30,7 @@ class PixleAttack(Attack):
 
         # self.tol = tol
         self.update_each_iteration = update_each_iteration
-        self.max_patches = max_patches
+        self.max_patches = max_iterations
 
         self.penalize_epsilon = penalize_epsilon
 
@@ -253,22 +253,6 @@ class PixleAttack(Attack):
             statistics.append(image_probs)
             iterations.append(it)
 
-            # if best_solution is None:
-            #     best_image = pert_image
-            #
-            # elif not self.update_each_iteration \
-            #         and best_solution is not None:
-            #     best_image = self._perturb(source=image,
-            #                                destination=best_image,
-            #                                solution=best_solution)
-            #
-            # tot_it += it + 1
-            #
-            # if stop:
-            #     break
-
-            # image = best_image
-
             adv_images.append(best_image)
 
         self.probs_statistics = statistics
@@ -284,31 +268,9 @@ class PixleAttack(Attack):
         return prob.detach().cpu().numpy()
 
     def loss(self, img, label, target_attack=False):
-        # if not solution_as_perturbed:
-        #     if sum(solution) == 0:
-        #         return np.inf
-        #
-        #     for i, p in enumerate(solution):
-        #         p = round(p)
-        #         if p == 1:
-        #             pert_image = self._perturb(source=img,
-        #                                        destination=pert_image,
-        #                                        solution=attacks[i])
-        # else:
-        #     pert_image = solution
 
         p = self._get_prob(img)
         p = p[np.arange(len(p)), label]
-
-        # zero_norm = torch.linalg.norm((img - img).view(-1),
-        #                               ord=0).item() / 3
-        # pixels = img.shape[1] * img.shape[2]
-        #
-        # perc_change_pixels = zero_norm / pixels
-
-        # if self.penalize_epsilon:
-        #     p += torch.linalg.norm((pert_image - img).view(-1),
-        #                            float('inf')).item()
 
         if target_attack:
             p = 1 - p
@@ -417,17 +379,10 @@ class PixleAttack(Attack):
                                           ord=0).item() / 3
             pixels = img.shape[1] * img.shape[2]
 
-            perc_change_pixels = zero_norm / pixels
-
-            # if self.penalize_epsilon:
-            #     p += torch.linalg.norm((pert_image - img).view(-1),
-            #                            float('inf')).item()
-
             if target_attack:
                 p = 1 - p
 
             return p.sum()
-            # return p.sum()
 
         @torch.no_grad()
         def callback(solution,
@@ -447,10 +402,8 @@ class PixleAttack(Attack):
 
             if target_attack:
                 return mx == label
-                # return p[label] > 0.8
             else:
                 return mx != label
-                # return p[label] < 0.1
 
         return func, callback
 
@@ -460,77 +413,17 @@ class PixleAttack(Attack):
 
         c, h, w = source.shape[1:]
 
-        # def get_indexes(x, y, xl, yl):
-        #     if yl > 0:
-        #         row_list = np.arange(y, min(h, y + yl))
-        #
-        #         # mxr = max(row_list)
-        #         # if mxr >= h:
-        #         #     d = mxr - h
-        #         #     row_list -= d + 1
-        #     else:
-        #         row_list = [y]
-        #
-        #     if xl > 0:
-        #         col_list = np.arange(x, min(w, x + xl))
-        #
-        #         # mxc = max(col_list)
-        #         # if mxc >= w:
-        #         #     d = mxc - w
-        #         #     col_list -= d + 1
-        #     else:
-        #         col_list = [x]
-        #
-        #     return row_list, col_list, np.ix_(range(c), row_list, col_list)
 
         x, y, xl, yl = solution[:4]
         destinations = solution[4:]
-
-        # x1, y1 = int(round(x1)), int(round(y1))
-        # xl2, yl2 = int(round(xl1)), int(round(yl1))
-        # x1, y1 = int(x1 * (w - 1)), int(y1 * (h - 1))
-        # x2, y2 = int(x2 * (w - 1)), int(y2 * (h - 1))
 
         source_pixels = np.ix_(range(c),
                                np.arange(y, y + yl),
                                np.arange(x, x + xl))
 
-        # rows, cols, s1 = get_indexes(x1, y1, xl1, yl1)
-        # dest_cols = [x for x, _ in destinations]
-        # dest_rows = [y for _, y in destinations]
-        # dest_pixels = np.ix_(range(c), dest_rows, dest_cols)
-        # s = source[0][source_pixels]
-        # s1 = source[0, :, np.arange(y, y + yl), np.arange(x, x + xl)]
-        # d = destination[0, :, dest_rows, dest_cols]
-        # d = destination[0, :, destinations[:, 1], destinations[:, 0]]
-        # destination[0, :, destinations[:, 1], destinations[:, 0]] =
-        # source[0][source_pixels].view(3, -1)
-        # grid_x, grid_y = torch.meshgrid(torch.tensor(dest_rows),
-        #                                 torch.tensor(dest_cols))
-        # d = destination[0, :, grid_x, grid_y]
-        # s2 = get_indexes(x2, y2, xl2, yl2)[-1]
-        # p1 = source[0][s1]
-        # p2 = source[0][a]
 
         indexes = torch.tensor(destinations)
         destination = destination.clone().detach().to(self.device)
-
-        # if self.swap:
-        #     if not self.same_size:
-        #         p2_shape = p2.shape[1:]
-        #         p2 = resize(p2, p1.shape[1:])
-        #         p1 = resize(p1, p2_shape)
-        #
-        #     destination[0][s1] = p2
-        #     destination[0][s2] = p1
-        # else:
-        #     if not self.same_size:
-        #         # p2_shape = p2.shape[1:]
-        #         p2 = resize(p2, p1.shape[1:])
-        #         # p1 = resize(p1, p2_shape)
-
-        # destination[0][dest_pixels] = source[0][source_pixels]
-        # img[0][s2] = p1
 
         s = source[0][source_pixels].view(3, -1)
 
@@ -539,7 +432,6 @@ class PixleAttack(Attack):
             destination[0, :, indexes[:, 0], indexes[:, 1]] = s
             destination[0][source_pixels] = d.unsqueeze(-1)
         else:
-            # s = source[0][source_pixels].view(3, -1)
             destination[0, :, indexes[:, 0], indexes[:, 1]] = s
 
         return destination

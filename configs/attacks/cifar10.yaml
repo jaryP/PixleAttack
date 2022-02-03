@@ -5,7 +5,7 @@
   x_dimensions: 1
   y_dimensions: 1
   save_images: true
-  load: true
+  load: false
   swap: false
   pixel_mapping: random
 #1px_distance_random:

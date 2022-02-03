@@ -44,16 +44,9 @@ class TinyImagenet(Dataset):
         self.train = train
         self.loader = loader
 
-        # super(TinyImagenet, self).__init__(
-        #     root, self.filename[1], self.md5, download=download, verbose=True)
         self.root = Path(root).expanduser()
 
-        # self._load_dataset()
-        # self.data_folder = os.path.join(self.root, 'tiny-imagenet-200')
         self.data_folder = self.root / 'tiny-imagenet-200'
-
-        # self.label2id, self.id2label = TinyImagen et.\
-        #     labels2dict(self.data_folder)
 
         label2id = {}
         id2label = {}
@@ -71,37 +64,6 @@ class TinyImagenet(Dataset):
         self.label2id, self.id2label = label2id, id2label
 
         self.data, self.targets = self.load_data()
-
-    # def _load_dataset(self) -> None:
-    #     """
-    #     The standardized dataset download and load procedure.
-    #     For more details on the coded procedure see the class documentation.
-    #     This method shouldn't be overridden.
-    #     This method will raise and error if the dataset couldn't be loaded
-    #     or downloaded.
-    #     :return: None
-    #     """
-    #     metadata_loaded = False
-    #     metadata_load_error = None
-    #
-    #     try:
-    #         metadata_loaded = self._load_metadata()
-    #     except Exception as e:
-    #         metadata_load_error = e
-    #
-    #     if metadata_loaded:
-    #         if self.verbose:
-    #             print('Files already downloaded and verified')
-    #         return
-    #
-    #     if not self.download:
-    #         msg = 'Error loading dataset metadata (dataset download was ' \
-    #               'not attempted as "download" is set to False)'
-    #         if metadata_load_error is None:
-    #             raise RuntimeError(msg)
-    #         else:
-    #             print(msg)
-    #             raise metadata_load_error
 
     @staticmethod
     def labels2dict(data_folder):
@@ -159,8 +121,7 @@ class TinyImagenet(Dataset):
             collected.
         :returns img_paths: list of strings (paths)
         """
-        # train_img_folder = os.path.join(self.data_folder,
-        #                                 'train', class_name, 'images')
+
         train_img_folder = self.data_folder / 'train' / class_name / 'images'
 
         img_paths = [f for f in train_img_folder.iterdir() if f.is_file()]
@@ -174,16 +135,10 @@ class TinyImagenet(Dataset):
             collected.
         :returns img_paths: list of strings (paths)
         """
-        # train_img_folder = os.path.join(self.data_folder,
-        #                                 'val', 'images')
         val_img_folder = self.data_folder / 'val' / 'images'
-        # train_img_folder = os.path.join(self.data_folder,
-        #                                 'val', 'val_annotations.txt')
         annotations_file = self.data_folder / 'val' / 'val_annotations.txt'
 
         valid_names = []
-
-        # filter validation images by class using appropriate file
         with open(str(annotations_file), 'r') as f:
 
             reader = csv.reader(f, dialect='excel-tab')
@@ -204,8 +159,6 @@ class TinyImagenet(Dataset):
 
         path, target = self.data[index], int(self.targets[index])
 
-        # doing this so that it is consistent with all other datasets
-        # to return a PIL Image
         img = self.loader(path)
 
         if self.transform is not None:
@@ -269,8 +222,6 @@ def get_dataset(name, model_name, augmentation=False, path=None):
         else:
             tt = []
 
-        mn, std = [0.5, 0.5, 0.5], [0.5, 0.5, 0.5]
-
         tt.extend([ToTensor(),
                    # Normalize(mn, std)
                    ])
@@ -279,10 +230,6 @@ def get_dataset(name, model_name, augmentation=False, path=None):
             ToTensor(),
             # Normalize(mn, std)
         ]
-
-        # if 'resnet' in model_name:
-        #     tt = [transforms.Resize(256), transforms.CenterCrop(224)] + tt
-        #     t = [transforms.Resize(256), transforms.CenterCrop(224)] + t
 
         transform = Compose(t)
         train_transform = Compose(tt)
@@ -307,12 +254,10 @@ def get_dataset(name, model_name, augmentation=False, path=None):
 
         tt.extend([
             ToTensor(),
-            # Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
         ])
 
         t = [
             ToTensor(),
-            # Normalize((0.4914, 0.4822, 0.4465), (0.247, 0.243, 0.261))
         ]
 
         transform = Compose(t)
@@ -328,109 +273,26 @@ def get_dataset(name, model_name, augmentation=False, path=None):
 
         input_size, classes = (3, 32, 32), 10
 
-    # elif name == 'cifar100':
-    #     tt = [
-    #         RandomCrop(32, padding=4),
-    #         RandomHorizontalFlip(),
-    #         ToTensor(),
-    #         Normalize((0.4914, 0.4822, 0.4465),
-    #                              (0.2023, 0.1994, 0.2010))]
-    #
-    #     t = [
-    #         ToTensor(),
-    #         Normalize((0.4914, 0.4822, 0.4465),
-    #                              (0.2023, 0.1994, 0.2010))]
-    #
-    #     transform = Compose(t)
-    #     train_transform = Compose(tt)
-    #
-    #     train_set = datasets.CIFAR100(
-    #         root='~/datasets/cifar100', train=True, download=True,
-    #         transform=train_transform)
-    #
-    #     test_set = datasets.CIFAR100(
-    #         root='~/datasets/cifar100', train=False, download=True,
-    #         transform=transform)
-    #
-    #     input_size, classes = 3, 100
-    #
-    # elif name == 'tinyimagenet':
-    #     tt = [
-    #         ToTensor(),
-    #         # transforms.RandomCrop(56),
-    #         RandomResizedCrop(64),
-    #         RandomHorizontalFlip(),
-    #         Normalize((0.4802, 0.4481, 0.3975),
-    #                              (0.2302, 0.2265, 0.2262))
-    #     ]
-    #
-    #     t = [
-    #         ToTensor(),
-    #         Normalize((0.4802, 0.4481, 0.3975),
-    #                              (0.2302, 0.2265, 0.2262))
-    #     ]
-    #
-    #     transform = Compose(t)
-    #     train_transform = Compose(tt)
-    #
-    #     # train_set = TinyImageNet(
-    #     #     root='~/datasets/tiny-imagenet-200', split='train',
-    #     #     transform=transform)
-    #
-    #     train_set = datasets.ImageFolder('~/datasets/tiny-imagenet-200/train',
-    #                                      transform=train_transform)
-    #
-    #     # for x, y in train_set:
-    #     #     if x.shape[exp_0] == 1:
-    #     #         print(x.shape[exp_0] == 1)
-    #
-    #     # test_set = TinyImageNet(
-    #     #     root='~/datasets/tiny-imagenet-200', split='val',
-    #     #     transform=train_transform)
-    #     test_set = datasets.ImageFolder('~/datasets/tiny-imagenet-200/val',
-    #                                     transform=transform)
-    #
-    #     # for x, y in test_set:
-    #     #     if x.shape[exp_0] == 1:
-    #     #         print(x.shape[exp_0] == 1)
-    #
-    #     input_size, classes = 3, 200
-
     elif name == 'tinyimagenet':
         tt = [
             transforms.RandomRotation(20),
             transforms.RandomHorizontalFlip(0.5),
             transforms.ToTensor(),
-            # transforms.Normalize([0.4802, 0.4481, 0.3975],
-            #                      [0.2302, 0.2265, 0.2262])
-            # transforms.RandomCrop(56),
-            # RandomCrop(64, padding=4),
+
         ]
 
         t = [
             transforms.ToTensor(),
-            # transforms.Normalize([0.4802, 0.4481, 0.3975],
-            #                      [0.2302, 0.2265, 0.2262])
+
         ]
 
         transform = transforms.Compose(t)
         train_transform = transforms.Compose(tt)
 
-        # train_set = TinyImageNet(
-        #     root='./datasets/tiny-imagenet-200', split='train',
-        #     transform=transform)
 
         train_set = TinyImagenet('~/datasets/',
                                  transform=train_transform, train=True)
 
-        # for x, y in train_set:
-        #     if x.shape[0] == 1:
-        #         print(x.shape[0] == 1)
-
-        # test_set = TinyImageNet(
-        #     root='./datasets/tiny-imagenet-200', split='val',
-        #     transform=train_transform)
-        
         test_set = TinyImagenet('~/datasets/',
                                 transform=transform, train=False)
 

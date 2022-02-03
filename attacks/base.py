@@ -86,7 +86,7 @@ def get_default_attack_config(cfg: DictConfig):
              'fixed_selection_quantile': 0.8,
              'seed': None}
     elif name == 'pixle':
-        d = {'max_patches': 100,
+        d = {'max_iterations': 100,
              'restarts': 0,
              'x_dimensions': (0, 10),
              'y_dimensions': (0, 10),
@@ -162,7 +162,7 @@ def get_attack(cfg: DictConfig):
                               overshoot=cfg.get('overshoot', 0.02))
         elif name == 'pixle':
             return PixleAttack(model,
-                               max_patches=cfg['max_patches'],
+                               max_iterations=cfg['max_iterations'],
                                pixel_mapping=cfg['pixel_mapping'],
                                restarts=cfg.get('restarts', 0),
                                algorithm=cfg.get('algorithm', 'de'),

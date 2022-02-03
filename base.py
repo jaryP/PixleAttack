@@ -136,27 +136,3 @@ class Cub2011(Dataset):
             img = self.transform(img)
 
         return img, target
-
-
-# def get_branch_model(name, image_size, classes, equalize_embedding=True):
-#     name = name.lower()
-#     if name == 'alexnet':
-#         model = AlexNet(image_size[0])
-#     elif name == 'resnet20':
-#         model = branch_resnet20()
-#         # return AlexNet(input_channels), AlexNetClassifier(classes)
-#     # elif 'resnet' in name:
-#     #     if name == 'resnet20':
-#     #         model
-#     #         return resnet20(None), ResnetClassifier(classes)
-#     #     else:
-#     #         assert False
-#     else:
-#         assert False
-#
-#     classifiers = get_intermediate_classifiers(model,
-#                                                image_size,
-#                                                classes,
-#                                                equalize_embedding=equalize_embedding)
-#
-#     return model, classifiers

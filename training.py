@@ -55,27 +55,11 @@ class NpEncoder(json.JSONEncoder):
     def default(self, object):
         if isinstance(object, np.generic):
             return object.item()
-        # if isinstance(object, tuple):
-        #     return list(object)
         return super(NpEncoder, self).default(object)
-    # def default(self, obj):
-    #     if isinstance(obj, np.integer):
-    #         return int(obj)
-    #     if isinstance(obj, np.floating):
-    #         return float(obj)
-    #     if isinstance(obj, np.ndarray):
-    #         return obj.tolist()
-    #     if isinstance(obj, tuple):
-    #         return list(obj)
-    #     return super(NpEncoder, self).default(obj)
-
 
 def np_encoder(object):
     if isinstance(object, np.generic):
         return object.item()
-    # if isinstance(object, tuple):
-    #     return list(object)
-    # return super(NpEncoder, self).default(obj)
 
 
 def standard_training(cfg: DictConfig, save_path: str,
@@ -84,32 +68,11 @@ def standard_training(cfg: DictConfig, save_path: str,
 
     cfg = OmegaConf.to_container(cfg)
 
-    # log.info(OmegaConf.to_yaml(cfg))
-    # print(OmegaConf.to_yaml(cfg))
-    # print("Working directory : {}".format(os.getcwd()))
-
-    # if method_name == 'naive':
-    #     methods(cfg)
-    # if method_name == 'batch_ensemble':
-    #     batch_ensemble(cfg)
-    # if method_name == 'dropout':
-    #     dropout(cfg)
-    # method_name = cfg['method']['name']
-
     experiment_cfg = cfg['experiment']
     load, save, path, experiments = experiment_cfg.get('load', True), \
                                     experiment_cfg.get('save', True), \
                                     experiment_cfg.get('path', None), \
                                     experiment_cfg.get('experiments', 1)
-
-    # device = cfg['training'].get('device', 'cpu')
-
-    # if torch.cuda.is_available() and device != 'cpu':
-    #     torch.cuda.set_device(device)
-    #     device = 'cuda:{}'.format(device)
-    # else:
-    #     warnings.warn("Device not found or CUDA not available."
-    # device = torch.device(device)
 
     if path is None:
         path = os.getcwd()
@@ -125,15 +88,6 @@ def standard_training(cfg: DictConfig, save_path: str,
     augmented_dataset = dataset_cfg.get('augment', False)
 
     experiment_cfg = cfg['experiment']
-    # load, save, path, experiments = experiment_cfg.get('load', True), \
-    #                                 experiment_cfg.get('save', True), \
-    #                                 experiment_cfg.get('path', None), \
-    #                                 experiment_cfg.get('experiments', 1)
-
-    experiments = experiment_cfg.get('experiments', 1)
-    plot = experiment_cfg.get('plot', False)
-
-    # method_cfg = cfg['method']
 
     training_cfg = cfg['training']
     epochs, batch_size = training_cfg['epochs'], \
