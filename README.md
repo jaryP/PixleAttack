@@ -35,19 +35,26 @@ So see how to use it to lunch the experiments, please refer to the files:
 
 All the above files take as input the dataset, the architecture and the device to be used, with some limitations. 
 Please refer to each file to understand how to launch it.
-<!--
+
 ### Cite
 
 Please cite our work if you find it useful:
 
 ```
-@misc{pomponi2021structured,
-      title={Structured Ensembles: an Approach to Reduce the Memory Footprint of Ensemble Methods}, 
-      author={Jary Pomponi and Simone Scardapane and Aurelio Uncini},
-      year={2021},
-      eprint={2105.02551},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@ARTICLE{2022arXiv220202236P,
+       author = {{Pomponi}, Jary and {Scardapane}, Simone and {Uncini}, Aurelio},
+        title = "{Pixle: a fast and effective black-box attack based on rearranging pixels}",
+      journal = {arXiv e-prints},
+     keywords = {Computer Science - Machine Learning, Statistics - Machine Learning},
+         year = 2022,
+        month = feb,
+          eid = {arXiv:2202.02236},
+        pages = {arXiv:2202.02236},
+archivePrefix = {arXiv},
+       eprint = {2202.02236},
+ primaryClass = {cs.LG},
+       adsurl = {https://ui.adsabs.harvard.edu/abs/2022arXiv220202236P},
+      adsnote = {Provided by the SAO/NASA Astrophysics Data System}
 }
+
 ```
--->
